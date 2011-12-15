@@ -11,11 +11,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Date;
-
-import com.sun.jmx.snmp.Timestamp;
-
-import src.com.compressor.EncoderViejo;
 
 public class Client implements Runnable {
 	
@@ -25,9 +20,6 @@ public class Client implements Runnable {
 	public boolean sending = false;
 	
 	private static final String FILE_NAME = "Java";
-	
-	
-	private EncoderViejo encoder = new EncoderViejo();
 	
 	@Override
 	public void run() {
