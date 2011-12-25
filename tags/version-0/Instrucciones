@@ -1,0 +1,7 @@
+1. Corro el server (esperando el tcp handshake)
+2. Corro emulador (espero a q se instale el apk (muuy lento, como acelerarlo?))
+3. En cmd:
+	telnet localhost 5554
+	redir add udp:5000:5000
+	exit
+4. Start a la app desde el emulador (darle al "Start UDP Traffic")
