@@ -58,7 +58,7 @@ public class Server implements Runnable {
         	System.out.println("TCP handshake received!");
         	clientSocket.close();
             System.out.println("Sending packets!");
-            /* Finish signal Thread */
+            /* Finish signal Thread*/ 
             new Thread(){
             	@Override
             	public void run() {
@@ -111,11 +111,10 @@ public class Server implements Runnable {
 				/* Create UDP-packet with 
 				 * data & destination(url+port) */
 				packet = new DatagramPacket(buf, buf.length, serverAddr, SERVER_PORT);
-				System.out.println("Creating packet...");
 				
 				/* Send out the packet */
 				socket.send(packet);
-				System.out.println("Sending packet...");
+				//System.out.println("Sending packet number " + idx + " with size: " + packet.getLength());
 				//System.out.println("packet index: " + idx + " -> " + System.currentTimeMillis());
 				idx++;
 				
