@@ -1,7 +1,10 @@
 package src.com.utils;
 
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -38,11 +41,6 @@ public class ImageUtils {
 	        } catch (IOException ex) {
 	        	ex.printStackTrace();
 	        }
-	        
-	        //ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
-	        //esto es usando encoding
-//	        ByteArrayOutputStream encodedImage = encoder.encode(bis);
-//	        img = encodedImage.toByteArray();
 	        
 	        //Esto es sin usar encoding
 	        img = bos.toByteArray();
@@ -82,39 +80,43 @@ public class ImageUtils {
 		return bos.toByteArray();
 	}
 	
-	//Not useful if only compresses...
-	public static void compressJpegFile(File infile, File outfile, float compressionQuality) {
-	    try {
-	        // Retrieve jpg image to be compressed
-	        RenderedImage rendImage = ImageIO.read(infile);
-
-	        // Find a jpeg writer
-	        ImageWriter writer = null;
-	        @SuppressWarnings("rawtypes")
-			Iterator iter = ImageIO.getImageWritersByFormatName("jpg");
-	        if (iter.hasNext()) {
-	            writer = (ImageWriter)iter.next();
-	        }
-
-	        // Prepare output file
-	        ImageOutputStream ios = ImageIO.createImageOutputStream(outfile);
-	        writer.setOutput(ios);
-
-	        // Set the compression quality
-	        ImageWriteParam iwparam = new JPEGImageWriteParam(Locale.getDefault());
-	        iwparam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT) ;
-	        iwparam.setCompressionQuality(compressionQuality);
-	        
-	        // Write the image
-	        writer.write(null, new IIOImage(rendImage, null, null), iwparam);
-
-	        // Cleanup
-	        ios.flush();
-	        writer.dispose();
-	        ios.close();
-	    } catch (IOException e) {
-	    	e.printStackTrace();
-	    }
+	public static BufferedImage createBufferedImageFrom(File file, int width, int height){
+		return new BufferedImage(width, height,  BufferedImage.TYPE_3BYTE_BGR);
 	}
+	
+	public static BufferedImage[] splitImage(BufferedImage img, int cols, int rows) {
+		int w = img.getWidth()/cols; //w of the mini-image
+		int h = img.getHeight()/rows;//h of the mini-image
+		int num = 0;
+		BufferedImage imgs[] = new BufferedImage[cols*rows];
+		for(int y = 0; y < rows; y++) {
+			for(int x = 0; x < cols; x++) {
+				imgs[num] = new BufferedImage(w, h, img.getType());
+				// Tell the graphics to draw only one block of the image
+				Graphics2D g = imgs[num].createGraphics();
+				g.drawImage(img, 0, 0, w, h, w*x, h*y, w*x+w, h*y+h, null);
+				g.dispose();
+				num++;
+			}
+		}
+		return imgs;
+	}
+
+	public static byte[] bufferedImageToByteArray(BufferedImage bufferedImage, int imageNumber, int x, int y) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(baos);
+		try {
+			dos.writeInt(imageNumber); //Image id
+			dos.writeInt(x); //X offset
+			dos.writeInt(y); //Y offset
+			ImageIO.write(bufferedImage, "jpg", dos);
+			dos.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return baos.toByteArray();
+	}
+
+
 	
 }
