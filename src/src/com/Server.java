@@ -1,5 +1,6 @@
 package src.com;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -14,6 +15,7 @@ import src.com.utils.ImageUtils;
 
 public class Server implements Runnable {
 	
+	private static final int MAX_UDP_PACKET_SIZE = 65507;
 	public static final String ANDROID_IP = "127.0.0.1"; 
 	public static final int SERVER_PORT = 5000;
 	public static final int TCP_PORT = 4444;
@@ -26,7 +28,7 @@ public class Server implements Runnable {
 	public Server(){
 		files = new ArrayList<File>();
 		File file;
-		for(int i = 0; i < 953; i++){
+		for(int i = 0; i < 300; i++){
 			String filePrefix = "";
 			if(i < 10){
 				filePrefix = "00";
@@ -104,27 +106,35 @@ public class Server implements Runnable {
 			byte[] buf = null;
 			DatagramPacket packet = null;
 			while(sending){
-				//Thread.sleep(500);
+				Thread.sleep(1000);
 				/* Prepare some data to be sent. */
 				file = files.get(i);
-				buf = ImageUtils.compressByteArray(ImageUtils.imgToByte(file));
-				//System.out.println("image size: " + buf.length);
+				BufferedImage bufferedImage = ImageUtils.createBufferedImageFrom(file, 680, 360);
+				BufferedImage[] splitedBufferedImageArray = ImageUtils.splitImage(bufferedImage, 2, 2);
 				
-				/* Create UDP-packet with 
-				 * data & destination(url+port) */
-				packet = new DatagramPacket(buf, buf.length, serverAddr, SERVER_PORT);
+				for(int j = 0; j < splitedBufferedImageArray.length; j++){
+					Thread.sleep(200);
+					System.out.println(splitedBufferedImageArray.length);
+						buf = ImageUtils.compressByteArray(ImageUtils.bufferedImageToByteArray(splitedBufferedImageArray[j], i, j%2, j/2));
+						assert buf.length < MAX_UDP_PACKET_SIZE;
+						
+						/* Create UDP-packet with 
+						 * data & destination(url+port) */
+						packet = new DatagramPacket(buf, buf.length, serverAddr, SERVER_PORT);
+						System.out.println("Creating packet...");
+						
+						/* Send out the packet */
+						socket.send(packet);
+						System.out.println("Sending packet... img " + i + " part " + j);						
+					}
 				
-				/* Send out the packet */
-				socket.send(packet);
-				//System.out.println("Sending packet number " + idx + " with size: " + packet.getLength());
-				//System.out.println("packet index: " + idx + " -> " + System.currentTimeMillis());
 				idx++;
 				
 				if(idx == 5000){
 					break;
 				}
 				
-				if(i == 952){
+				if(i == 259){
 					i = 0;
 				}else{
 					i++;
