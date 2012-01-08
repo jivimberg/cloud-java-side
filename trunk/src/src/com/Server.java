@@ -19,19 +19,21 @@ public class Server implements Runnable {
 	public static final int TCP_PORT = 4444;
 	public boolean sending = false;
 	
-	private static final String FILE_NAME = "Java";
+	private static final String FILE_NAME = "MailmenTeaser.flv_f00";
 	
 	private List<File> files;
 	
 	public Server(){
 		files = new ArrayList<File>();
 		File file;
-		for(int i = 9; i > 1; i--){
-			file = new File("src/resources/" + FILE_NAME + i + ".jpg");
-			/*byte[] uncompressedBytes = imgToByte(file);
-			System.out.println("Normal File: "+uncompressedBytes.length);
-			byte[] compressedBytes = compressByteArray(uncompressedBytes);
-			System.out.println("Compressed File: "+ compressedBytes.length);*/
+		for(int i = 0; i < 953; i++){
+			String filePrefix = "";
+			if(i < 10){
+				filePrefix = "00";
+			}else if(i < 100){
+				filePrefix = "0";
+			}
+			file = new File("src/resources/mailmen/"+ FILE_NAME + filePrefix + i + ".jpg");
 			files.add(file);
 		}
 	}
@@ -96,7 +98,7 @@ public class Server implements Runnable {
 			socket = new DatagramSocket();
 			System.out.println("Creating new socket in " + ANDROID_IP);
 
-			int i = 9;
+			int i = 0;
 			int idx = 0; //for benchmarking
 			File file = null;
 			byte[] buf = null;
@@ -104,7 +106,7 @@ public class Server implements Runnable {
 			while(sending){
 				//Thread.sleep(500);
 				/* Prepare some data to be sent. */
-				file = files.get(i-2);
+				file = files.get(i);
 				buf = ImageUtils.compressByteArray(ImageUtils.imgToByte(file));
 				//System.out.println("image size: " + buf.length);
 				
@@ -118,14 +120,14 @@ public class Server implements Runnable {
 				//System.out.println("packet index: " + idx + " -> " + System.currentTimeMillis());
 				idx++;
 				
-				if(idx == 500){
+				if(idx == 5000){
 					break;
 				}
 				
-				if(i == 2){
-					i = 9;
+				if(i == 952){
+					i = 0;
 				}else{
-					i--;
+					i++;
 				}	
 			}
 		} catch (Exception e) {
