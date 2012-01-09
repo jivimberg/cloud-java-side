@@ -28,7 +28,7 @@ public class Server implements Runnable {
 	public Server(){
 		files = new ArrayList<File>();
 		File file;
-		for(int i = 0; i < 300; i++){
+		for(int i = 0; i < 954; i++){
 			String filePrefix = "";
 			if(i < 10){
 				filePrefix = "00";
@@ -106,27 +106,27 @@ public class Server implements Runnable {
 			byte[] buf = null;
 			DatagramPacket packet = null;
 			while(sending){
-				Thread.sleep(1000);
+				Thread.sleep(500);
 				/* Prepare some data to be sent. */
 				file = files.get(i);
-				BufferedImage bufferedImage = ImageUtils.createBufferedImageFrom(file, 680, 360);
-				BufferedImage[] splitedBufferedImageArray = ImageUtils.splitImage(bufferedImage, 2, 2);
+				BufferedImage[] splitedBufferedImageArray = ImageUtils.splitImage(file, 2, 2);
 				
 				for(int j = 0; j < splitedBufferedImageArray.length; j++){
 					Thread.sleep(200);
 					System.out.println(splitedBufferedImageArray.length);
-						buf = ImageUtils.compressByteArray(ImageUtils.bufferedImageToByteArray(splitedBufferedImageArray[j], i, j%2, j/2));
-						assert buf.length < MAX_UDP_PACKET_SIZE;
-						
-						/* Create UDP-packet with 
-						 * data & destination(url+port) */
-						packet = new DatagramPacket(buf, buf.length, serverAddr, SERVER_PORT);
-						System.out.println("Creating packet...");
-						
-						/* Send out the packet */
-						socket.send(packet);
-						System.out.println("Sending packet... img " + i + " part " + j);						
-					}
+					buf = ImageUtils.compressByteArray(ImageUtils.bufferedImageToByteArray(splitedBufferedImageArray[j], i, j % 2,j / 2));
+					assert buf.length < MAX_UDP_PACKET_SIZE;
+
+					/*
+					 * Create UDP-packet with data & destination(url+port)
+					 */
+					packet = new DatagramPacket(buf, buf.length, serverAddr, SERVER_PORT);
+					System.out.println("Creating packet...");
+
+					/* Send out the packet */
+					socket.send(packet);
+					System.out.println("Sending packet... img " + i + " (" + j%2 + "," + j / 2 + ")");
+				}
 				
 				idx++;
 				
@@ -134,7 +134,7 @@ public class Server implements Runnable {
 					break;
 				}
 				
-				if(i == 259){
+				if(i == 952){
 					i = 0;
 				}else{
 					i++;
