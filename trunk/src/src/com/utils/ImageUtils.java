@@ -2,23 +2,15 @@ package src.com.utils;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Locale;
 import java.util.zip.Deflater;
 
-import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
-import javax.imageio.stream.ImageOutputStream;
 
 public class ImageUtils {
 	
@@ -80,31 +72,32 @@ public class ImageUtils {
 		return bos.toByteArray();
 	}
 	
-	public static BufferedImage createBufferedImageFrom(File file, int width, int height){
-		return new BufferedImage(width, height,  BufferedImage.TYPE_3BYTE_BGR);
-	}
-	
-	public static BufferedImage[] splitImage(BufferedImage img, int cols, int rows) {
-		int w = img.getWidth()/cols; //w of the mini-image
-		int h = img.getHeight()/rows;//h of the mini-image
-		int num = 0;
-		BufferedImage imgs[] = new BufferedImage[cols*rows];
-		for(int y = 0; y < rows; y++) {
-			for(int x = 0; x < cols; x++) {
-				imgs[num] = new BufferedImage(w, h, img.getType());
-				// Tell the graphics to draw only one block of the image
-				Graphics2D g = imgs[num].createGraphics();
-				g.drawImage(img, 0, 0, w, h, w*x, h*y, w*x+w, h*y+h, null);
-				g.dispose();
-				num++;
-			}
-		}
+	public static BufferedImage[] splitImage(File file, int cols, int rows) throws IOException {
+		FileInputStream fis = new FileInputStream(file);  
+        BufferedImage image = ImageIO.read(fis); //reading the image file
+        
+		int chunks = rows * cols;
+        int chunkWidth = image.getWidth() / cols; // determines the chunk width and height
+        int chunkHeight = image.getHeight() / rows;
+        int count = 0;
+        BufferedImage imgs[] = new BufferedImage[chunks]; //Image array to hold image chunks
+        for (int x = 0; x < rows; x++) {
+            for (int y = 0; y < cols; y++) {
+                //Initialize the image array with image chunks
+                imgs[count] = new BufferedImage(chunkWidth, chunkHeight, image.getType());
+
+                // draws the image chunk
+                Graphics2D gr = imgs[count++].createGraphics();
+                gr.drawImage(image, 0, 0, chunkWidth, chunkHeight, chunkWidth * y, chunkHeight * x, chunkWidth * y + chunkWidth, chunkHeight * x + chunkHeight, null);
+                gr.dispose();
+            }
+        }       
 		return imgs;
 	}
 
 	public static byte[] bufferedImageToByteArray(BufferedImage bufferedImage, int imageNumber, int x, int y) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		DataOutputStream dos = new DataOutputStream(baos);
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		final DataOutputStream dos = new DataOutputStream(baos);
 		try {
 			dos.writeInt(imageNumber); //Image id
 			dos.writeInt(x); //X offset
