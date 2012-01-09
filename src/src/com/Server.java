@@ -106,15 +106,16 @@ public class Server implements Runnable {
 			byte[] buf = null;
 			DatagramPacket packet = null;
 			while(sending){
-				Thread.sleep(500);
+//				Thread.sleep(100);
 				/* Prepare some data to be sent. */
 				file = files.get(i);
 				BufferedImage[] splitedBufferedImageArray = ImageUtils.splitImage(file, 2, 2);
 				
 				for(int j = 0; j < splitedBufferedImageArray.length; j++){
-					Thread.sleep(200);
+//					Thread.sleep(25);
 					System.out.println(splitedBufferedImageArray.length);
-					buf = ImageUtils.compressByteArray(ImageUtils.bufferedImageToByteArray(splitedBufferedImageArray[j], i, j % 2,j / 2));
+//					buf = ImageUtils.compressByteArray(ImageUtils.bufferedImageToByteArray(splitedBufferedImageArray[j], i, j % 2,j / 2));
+					buf = ImageUtils.bufferedImageToByteArray(splitedBufferedImageArray[j], i, j % 2,j / 2);
 					assert buf.length < MAX_UDP_PACKET_SIZE;
 
 					/*
