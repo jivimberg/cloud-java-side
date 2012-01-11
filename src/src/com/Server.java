@@ -129,7 +129,7 @@ public class Server implements Runnable {
 
 					/* Send out the packet */
 					socket.send(packet);
-					System.out.println("Sending packet... img " + i + " (" + j%ROWS + "," + j / COLS + ")");
+					System.out.println("Sending packet " + idx + " img " + i + " (" + j%ROWS + "," + j / COLS + ")");
 				}
 				
 				idx++;
