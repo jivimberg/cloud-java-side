@@ -21,6 +21,9 @@ public class Server implements Runnable {
 	public static final int TCP_PORT = 4444;
 	public boolean sending = false;
 	
+	private static final int COLS = 4;
+	private static final int ROWS = 4;
+	
 	private static final String FILE_NAME = "MailmenTeaser.flv_f00";
 	
 	private List<File> files;
@@ -109,13 +112,13 @@ public class Server implements Runnable {
 //				Thread.sleep(100);
 				/* Prepare some data to be sent. */
 				file = files.get(i);
-				BufferedImage[] splitedBufferedImageArray = ImageUtils.splitImage(file, 2, 2);
+				BufferedImage[] splitedBufferedImageArray = ImageUtils.splitImage(file, COLS, ROWS);
 				
 				for(int j = 0; j < splitedBufferedImageArray.length; j++){
 //					Thread.sleep(25);
 					System.out.println(splitedBufferedImageArray.length);
 //					buf = ImageUtils.compressByteArray(ImageUtils.bufferedImageToByteArray(splitedBufferedImageArray[j], i, j % 2,j / 2));
-					buf = ImageUtils.bufferedImageToByteArray(splitedBufferedImageArray[j], i, j % 2,j / 2);
+					buf = ImageUtils.bufferedImageToByteArray(splitedBufferedImageArray[j], i, j % ROWS,j / COLS);
 					assert buf.length < MAX_UDP_PACKET_SIZE;
 
 					/*
@@ -126,7 +129,7 @@ public class Server implements Runnable {
 
 					/* Send out the packet */
 					socket.send(packet);
-					System.out.println("Sending packet... img " + i + " (" + j%2 + "," + j / 2 + ")");
+					System.out.println("Sending packet... img " + i + " (" + j%ROWS + "," + j / COLS + ")");
 				}
 				
 				idx++;
