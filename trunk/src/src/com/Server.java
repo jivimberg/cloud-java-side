@@ -31,14 +31,14 @@ public class Server implements Runnable {
 	public Server(){
 		files = new ArrayList<File>();
 		File file;
-		for(int i = 0; i < 954; i++){
+		for(int i = 150; i < 954; i++){
 			String filePrefix = "";
 			if(i < 10){
 				filePrefix = "00";
 			}else if(i < 100){
 				filePrefix = "0";
 			}
-			file = new File("src/resources/mailmen/"+ FILE_NAME + filePrefix + i + ".jpg");
+			file = new File("src/resources/mailmen/"+ FILE_NAME + filePrefix + i + ".jpg");		
 			files.add(file);
 		}
 	}
@@ -115,9 +115,9 @@ public class Server implements Runnable {
 				BufferedImage[] splitedBufferedImageArray = ImageUtils.splitImage(file, COLS, ROWS);
 				
 				for(int j = 0; j < splitedBufferedImageArray.length; j++){
-//					Thread.sleep(25);
-					System.out.println(splitedBufferedImageArray.length);
-//					buf = ImageUtils.compressByteArray(ImageUtils.bufferedImageToByteArray(splitedBufferedImageArray[j], i, j % 2,j / 2));
+					Thread.sleep(150);
+					//System.out.println(splitedBufferedImageArray.length);
+					//buf = ImageUtils.compressByteArray(ImageUtils.bufferedImageToByteArray(splitedBufferedImageArray[j], i, j % 2,j / 2));
 					buf = ImageUtils.bufferedImageToByteArray(splitedBufferedImageArray[j], i, j % ROWS,j / COLS);
 					assert buf.length < MAX_UDP_PACKET_SIZE;
 
@@ -125,20 +125,15 @@ public class Server implements Runnable {
 					 * Create UDP-packet with data & destination(url+port)
 					 */
 					packet = new DatagramPacket(buf, buf.length, serverAddr, SERVER_PORT);
-					System.out.println("Creating packet...");
+					//System.out.println("Creating packet...");
 
 					/* Send out the packet */
 					socket.send(packet);
-					System.out.println("Sending packet " + idx + " img " + i + " (" + j%ROWS + "," + j / COLS + ")");
+					System.out.println("Sent packet... img " + i + " (" + j%ROWS + "," + j / COLS + ")");
+					//System.out.println(System.currentTimeMillis());
 				}
 				
-				idx++;
-				
-				if(idx == 5000){
-					break;
-				}
-				
-				if(i == 952){
+				if(i == 952-150){
 					i = 0;
 				}else{
 					i++;
