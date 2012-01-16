@@ -104,33 +104,28 @@ public class Server implements Runnable {
 			System.out.println("Creating new socket in " + ANDROID_IP);
 
 			int i = 0;
-			int idx = 0; //for benchmarking
+			//int idx = 0; //for benchmarking
 			File file = null;
 			byte[] buf = null;
 			DatagramPacket packet = null;
 			while(sending){
-//				Thread.sleep(100);
+				//Thread.sleep(100);
 				/* Prepare some data to be sent. */
 				file = files.get(i);
 				BufferedImage[] splitedBufferedImageArray = ImageUtils.splitImage(file, COLS, ROWS);
 				
 				for(int j = 0; j < splitedBufferedImageArray.length; j++){
-					Thread.sleep(150);
-					//System.out.println(splitedBufferedImageArray.length);
+					//Thread.sleep(150);
 					//buf = ImageUtils.compressByteArray(ImageUtils.bufferedImageToByteArray(splitedBufferedImageArray[j], i, j % 2,j / 2));
 					buf = ImageUtils.bufferedImageToByteArray(splitedBufferedImageArray[j], i, j % ROWS,j / COLS);
 					assert buf.length < MAX_UDP_PACKET_SIZE;
 
-					/*
-					 * Create UDP-packet with data & destination(url+port)
-					 */
 					packet = new DatagramPacket(buf, buf.length, serverAddr, SERVER_PORT);
 					//System.out.println("Creating packet...");
 
-					/* Send out the packet */
 					socket.send(packet);
-					System.out.println("Sent packet... img " + i + " (" + j%ROWS + "," + j / COLS + ")");
-					//System.out.println(System.currentTimeMillis());
+					//System.out.println("Sent packet... img " + i + " (" + j%ROWS + "," + j / COLS + ")");
+					System.out.println(System.currentTimeMillis());
 				}
 				
 				if(i == 952-150){
