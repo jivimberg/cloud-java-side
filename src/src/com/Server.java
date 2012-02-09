@@ -31,7 +31,7 @@ public class Server implements Runnable {
 	public Server(){
 		files = new ArrayList<File>();
 		File file;
-		for(int i = 150; i < 954; i++){
+		for(int i = 0; i < 954; i++){
 			String filePrefix = "";
 			if(i < 10){
 				filePrefix = "00";
@@ -109,26 +109,22 @@ public class Server implements Runnable {
 			byte[] buf = null;
 			DatagramPacket packet = null;
 			while(sending){
-				//Thread.sleep(100);
-				/* Prepare some data to be sent. */
 				file = files.get(i);
 				BufferedImage[] splitedBufferedImageArray = ImageUtils.splitImage(file, COLS, ROWS);
 				
 				for(int j = 0; j < splitedBufferedImageArray.length; j++){
-					//Thread.sleep(150);
+					Thread.sleep(150);
 					//buf = ImageUtils.compressByteArray(ImageUtils.bufferedImageToByteArray(splitedBufferedImageArray[j], i, j % 2,j / 2));
 					buf = ImageUtils.bufferedImageToByteArray(splitedBufferedImageArray[j], i, j % ROWS,j / COLS);
 					assert buf.length < MAX_UDP_PACKET_SIZE;
 
 					packet = new DatagramPacket(buf, buf.length, serverAddr, SERVER_PORT);
-					//System.out.println("Creating packet...");
 
 					socket.send(packet);
 					//System.out.println("Sent packet... img " + i + " (" + j%ROWS + "," + j / COLS + ")");
-					System.out.println(System.currentTimeMillis());
 				}
 				
-				if(i == 952-150){
+				if(i == 952){
 					i = 0;
 				}else{
 					i++;
